@@ -5,7 +5,7 @@ class TutorialParser {
         this.file = file;
     }
 
-    parse() {
+    parse(playgroundURL, restURL) {
         let file = fs.readFileSync(this.file).toString();
 
         let tutorial = [];
@@ -59,8 +59,8 @@ class TutorialParser {
 
                 subsection.forEach((line) => {
 
-                    line = line.replace(/%PLAYGROUND_URL%/, process.env.PLAYGROUND_URL || 'http://localhost:8080');
-                    line = line.replace(/%REST_SERVER_URL%/, process.env.REST_SERVER_URL || 'http://localhost:3000');
+                    line = line.replace(/%PLAYGROUND_URL%/, playgroundURL || 'http://localhost:8080');
+                    line = line.replace(/%REST_SERVER_URL%/, restURL || 'http://localhost:3000');
 
                     if(line.substr(0, 6) !== '[//]: ') {
                         let linkRegEx = /\[.*?\]\(.*?\)/g;
