@@ -178,7 +178,8 @@ function deploy_composer_rest_server {
         -i 1 \
         -m 256M \
         --no-start \
-        --no-manifest
+        --no-manifest \
+        --random-route
     cf set-env ${CF_APP_NAME} NODE_CONFIG "${NODE_CONFIG}"
     cf set-env ${CF_APP_NAME} COMPOSER_CARD ${BUSINESS_NETWORK_CARD}
     cf set-env ${CF_APP_NAME} COMPOSER_NAMESPACES required
@@ -191,7 +192,7 @@ function deploy_composer_playground {
 
     CF_APP_NAME=${PLAYGROUND_APP_NAME}
     
-    cf push ${CF_APP_NAME} --docker-image ibmblockchain/composer-playground:${COMPOSER_VERSION} -i 1 -m 256M --no-start --no-manifest
+    cf push ${CF_APP_NAME} --docker-image ibmblockchain/composer-playground:${COMPOSER_VERSION} -i 1 -m 256M --no-start --random-route --no-manifest
     cf set-env ${CF_APP_NAME} NODE_CONFIG "${NODE_CONFIG}"
     cf start ${CF_APP_NAME}
 }
@@ -221,7 +222,7 @@ function deploy_cf_app {
     APP=$1
     echo deploying cloud foundry app ${APP}
     pushd apps/${APP}
-    cf push ${APP} -i 1 -m 128M --no-start
+    cf push ${APP} -i 1 -m 128M --random-route --no-start
     cf bind-service ${APP} ${BLOCKCHAIN_SERVICE_INSTANCE} -c '{"permissions":"read-only"}'
     popd
 }
