@@ -15,7 +15,6 @@ angular.module('tutorial')
     localStorage.setItem("ignoreTxnsBefore", new Date());
     
     $http({method: 'GET', url: '/assets/config.json'}).then((config) => {
-        console.log(config.data);
         $scope.tutorial = config.data.tutorial
 
         $scope.tutorial.forEach((page) => {
