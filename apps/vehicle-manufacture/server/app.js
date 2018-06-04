@@ -45,7 +45,6 @@ require('./routes')(app);
 
 var restServerConfig = Object.assign({}, config.get('restServer'));
 if (process.env.REST_SERVER_URLS ) {
-  console.log('OH GOD I\'M HIT. GOODBYE');
   try {
     var restServerEnv = JSON.parse(process.env.REST_SERVER_URLS);
     if (Object.keys(restServerEnv).length === 0) {
@@ -53,7 +52,6 @@ if (process.env.REST_SERVER_URLS ) {
     }
     var firstRestServer = restServerEnv[Object.keys(restServerEnv)[0]];
     restServerConfig = Object.assign(restServerConfig, firstRestServer); // allow for them to only specify some fields
-    restServerConfig = restServerEnv;
   } catch (err) {
     console.error('Error getting rest config from env vars, using default');
   }
