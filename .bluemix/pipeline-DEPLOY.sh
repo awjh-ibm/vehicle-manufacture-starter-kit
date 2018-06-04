@@ -8,6 +8,7 @@ source .bluemix/pipeline-BLOCKCHAIN.sh
 
 export CONTRACTS=$(ls contracts)
 export APPS=$(ls apps)
+export PLAYGROUND_APP_NAME="vehicle-manufacture-playground"
 if ls contracts/*/package.json > /dev/null 2>&1
 then
     export HAS_COMPOSER_CONTRACTS=true
@@ -185,6 +186,16 @@ function deploy_composer_rest_server {
     popd
 }
 
+function deploy_composer_playground {
+    echo deploying playground
+
+    CF_APP_NAME=${PLAYGROUND_APP_NAME}
+    
+    cf push composer-playground-${CF_APP_NAME} --docker-image ibmblockchain/composer-playground:${COMPOSER_VERSION} -i 1 -m 256M --no-start --no-manifest
+    cf set-env composer-playground-${CF_APP_NAME} NODE_CONFIG "${NODE_CONFIG}"
+    cf start composer-playground-${CF_APP_NAME}
+}
+
 function deploy_apps {
     for APP in ${APPS}
     do
@@ -318,6 +329,10 @@ function start_composer_rest_server {
     popd
 }
 
+function start_composer_playground {
+    cf start ${PLAYGROUND_APP_NAME}
+}
+
 function start_apps {
     for APP in ${APPS}
     do
@@ -344,6 +359,10 @@ function start_cf_app {
     echo starting cloud foundry app ${APP}
     pushd apps/${APP}
     cf set-env ${APP} REST_SERVER_URLS "${REST_SERVER_URLS}"
+
+    export CF_APP_NAME=${CF_APP}
+    export PLAYGROUND_URL=$(cf app ${PLAYGROUND_APP_NAME} | grep routes: | awk '{print $2}')
+    cf set-env ${APP} PLAYGROUND_URL "${PLAYGROUND_URL}"
     cf start ${APP}
     popd
 }
@@ -376,11 +395,14 @@ deploy_contracts &
 DEPLOY_CONTRACTS_PID=$!
 deploy_rest_servers &
 DEPLOY_REST_SERVERS_PID=$!
+deploy_composer_playground &
+DEPLOY_COMPOSER_PLAYGROUND=$!
 deploy_apps &
 DEPLOY_APPS_PID=$!
 wait ${DEPLOY_CONTRACTS_PID}
 update_blockchain_deploy_status 2
 wait ${DEPLOY_REST_SERVERS_PID}
+wait ${DEPLOY_COMPOSER_PLAYGROUND}
 update_blockchain_deploy_status 3
 wait ${DEPLOY_APPS_PID}
 update_blockchain_deploy_status 4
@@ -392,9 +414,12 @@ update_blockchain_deploy_status 6
 
 start_rest_servers &
 START_REST_SERVERS_PID=$!
+start_composer_playground &
+START_COMPOSER_PLAYGROUND=$!
 start_apps &
 START_APPS_PID=$!
 wait ${START_REST_SERVERS_PID}
+wait ${START_COMPOSER_PLAYGROUND}
 update_blockchain_deploy_status 7
 wait ${START_APPS_PID}
 update_blockchain_deploy_status 8
