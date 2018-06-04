@@ -44,10 +44,14 @@ require('./static-routes')(app);
 require('./routes')(app);
 
 var restServerConfig = Object.assign({}, config.get('restServer'));
-if (process.env.REST_SERVER_CONFIG ) {
+if (process.env.REST_SERVER_URLS ) {
   try {
-    var restServerEnv = JSON.parse(process.env.REST_SERVER_CONFIG);
-    restServerConfig = Object.assign(restServerConfig, restServerEnv); // allow for them to only specify some fields
+    var restServerEnv = JSON.parse(process.env.REST_SERVER_URLS);
+    if (Object.keys(restServerEnv).length === 0) {
+      throw new Error();
+    }
+    var firstRestServer = restServerEnv[Object.keys(restServerEnv)[0]];
+    restServerConfig = Object.assign(restServerConfig, firstRestServer); // allow for them to only specify some fields
     restServerConfig = restServerEnv;
   } catch (err) {
     console.error('Error getting rest config from env vars, using default');
