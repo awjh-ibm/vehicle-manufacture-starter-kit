@@ -45,6 +45,7 @@ require('./routes')(app);
 
 var restServerConfig = Object.assign({}, config.get('restServer'));
 if (process.env.REST_SERVER_URLS ) {
+  console.log('OH GOD I\'M HIT. GOODBYE');
   try {
     var restServerEnv = JSON.parse(process.env.REST_SERVER_URLS);
     if (Object.keys(restServerEnv).length === 0) {
