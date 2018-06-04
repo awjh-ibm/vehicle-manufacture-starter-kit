@@ -58,7 +58,7 @@ if (process.env.REST_SERVER_URLS ) {
 }
 
 var tutorialParser = new TutorialParser(path.join(__dirname,'../tutorial.md'));
-var tutorialMdAsObj = tutorialParser.parse();
+var tutorialMdAsObj = tutorialParser.parse(process.env.PLAYGROUND_URL, restServerConfig.httpURL.replace('/api', ''));
 app.set('config', {
   restServer: restServerConfig,
   tutorial: tutorialMdAsObj
