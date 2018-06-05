@@ -171,7 +171,7 @@ function deploy_composer_rest_server {
     pushd contracts/${CONTRACT}
     BUSINESS_NETWORK_NAME=$(jq --raw-output '.name' package.json)
     BUSINESS_NETWORK_CARD=admin@${BUSINESS_NETWORK_NAME}
-    CF_APP_NAME=composer-rest-server-${BUSINESS_NETWORK_NAME}
+    CF_APP_NAME=composer-rest-server-${BUSINESS_NETWORK_NAME} | cut -c1-63
     cf push \
         ${CF_APP_NAME} \
         --docker-image ibmblockchain/composer-rest-server:${COMPOSER_VERSION} \
@@ -406,17 +406,15 @@ deploy_apps &
 DEPLOY_APPS_PID=$!
 wait ${DEPLOY_CONTRACTS_PID}
 update_blockchain_deploy_status 2
+update_blockchain_deploy_status 3
 wait ${DEPLOY_REST_SERVERS_PID}
 wait ${DEPLOY_COMPOSER_PLAYGROUND}
-update_blockchain_deploy_status 3
 wait ${DEPLOY_APPS_PID}
 update_blockchain_deploy_status 4
 
 gather_rest_server_urls
 gather_playground_url
-update_blockchain_deploy_status 5
 gather_app_urls
-update_blockchain_deploy_status 6
 
 start_rest_servers &
 START_REST_SERVERS_PID=$!
@@ -426,7 +424,6 @@ start_apps &
 START_APPS_PID=$!
 wait ${START_REST_SERVERS_PID}
 wait ${START_COMPOSER_PLAYGROUND}
-update_blockchain_deploy_status 7
+update_blockchain_deploy_status 5
 wait ${START_APPS_PID}
-update_blockchain_deploy_status 8
-#BUMP
+update_blockchain_deploy_status 6
