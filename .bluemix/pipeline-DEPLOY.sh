@@ -176,7 +176,6 @@ function deploy_composer_rest_server {
     DATE=$(($(date +%s%N)/1000000))
     CF_APP_CUT_NAME=$(echo "composer-rest-server-${BUSINESS_NETWORK_NAME}" | cut -c1-45 )
     CF_APP_ROUTE="${CF_APP_CUT_NAME}-${DATE}"
-    echo "MY SPECIAL APP ROUTE ${CF_APP_ROUTE}"
     cf push \
         ${CF_APP_NAME} \
         --docker-image ibmblockchain/composer-rest-server:${COMPOSER_VERSION} \
@@ -371,7 +370,6 @@ function start_cf_app {
     pushd apps/${APP}
     cf set-env ${APP} REST_SERVER_URLS "${REST_SERVER_URLS}"
 
-    export PLAYGROUND_URL=$(cf app ${PLAYGROUND_APP_NAME} | grep routes: | awk '{print $2}')
     cf set-env ${APP} PLAYGROUND_URL "${PLAYGROUND_URL}"
     cf start ${APP}
     popd
