@@ -176,6 +176,14 @@ function deploy_composer_rest_server {
     DATE=$(($(date +%s%N)/1000000))
     CF_APP_CUT_NAME=$(echo "composer-rest-server-${BUSINESS_NETWORK_NAME}" | cut -c1-45 )
     CF_APP_ROUTE="${CF_APP_CUT_NAME}-${DATE}"
+
+    REST_SERVER_URL=$(cf app ${CF_APP_NAME} | grep routes: | awk '{print $2}')
+
+    if [ ! -z "$REST_SERVER_URL" -a "$REST_SERVER_URL" != " " ]
+    then
+        CF_APP_ROUTE=$(echo "${REST_SERVER_URL}" | cut -f1 -d".")
+        echo 'USING EXISTING ROUTE'
+    fi
     cf push \
         ${CF_APP_NAME} \
         --docker-image ibmblockchain/composer-rest-server:${COMPOSER_VERSION} \
