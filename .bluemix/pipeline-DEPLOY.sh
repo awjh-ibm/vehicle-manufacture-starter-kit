@@ -173,6 +173,10 @@ function deploy_composer_rest_server {
     BUSINESS_NETWORK_NAME=$(jq --raw-output '.name' package.json)
     BUSINESS_NETWORK_CARD=admin@${BUSINESS_NETWORK_NAME}
     CF_APP_NAME=composer-rest-server-${BUSINESS_NETWORK_NAME}
+    DATE=$(($(date +%s%N)/1000000))
+    CF_APP_CUT_NAME=$(echo "composer-rest-server-${BUSINESS_NETWORK_NAME}" | cut -c1-45 )
+    CF_APP_ROUTE="${CF_APP_CUT_NAME}-${DATE}"
+    echo "MY SPECIAL APP ROUTE ${CF_APP_ROUTE}"
     cf push \
         ${CF_APP_NAME} \
         --docker-image ibmblockchain/composer-rest-server:${COMPOSER_VERSION} \
@@ -180,7 +184,7 @@ function deploy_composer_rest_server {
         -m 256M \
         --no-start \
         --no-manifest \
-        --route-path andrew-is-best
+        --hostname ${CF_APP_ROUTE}
     cf set-env ${CF_APP_NAME} NODE_CONFIG "${NODE_CONFIG}"
     cf set-env ${CF_APP_NAME} COMPOSER_CARD ${BUSINESS_NETWORK_CARD}
     cf set-env ${CF_APP_NAME} COMPOSER_NAMESPACES required
