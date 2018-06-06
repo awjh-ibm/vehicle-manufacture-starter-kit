@@ -172,8 +172,7 @@ function deploy_composer_rest_server {
     pushd contracts/${CONTRACT}
     BUSINESS_NETWORK_NAME=$(jq --raw-output '.name' package.json)
     BUSINESS_NETWORK_CARD=admin@${BUSINESS_NETWORK_NAME}
-    CF_APP_NAME=$(echo "composer-rest-server-${BUSINESS_NETWORK_NAME}" | cut -c1-35) # ALLOW ENOUGH CHARS FOR RANDOM ROUTE
-    echo "SUPER APP NAME ${CF_APP_NAME}"
+    CF_APP_NAME=composer-rest-server-${BUSINESS_NETWORK_NAME}
     cf push \
         ${CF_APP_NAME} \
         --docker-image ibmblockchain/composer-rest-server:${COMPOSER_VERSION} \
@@ -181,7 +180,7 @@ function deploy_composer_rest_server {
         -m 256M \
         --no-start \
         --no-manifest \
-        --random-route
+        --route-path andrew-is-best
     cf set-env ${CF_APP_NAME} NODE_CONFIG "${NODE_CONFIG}"
     cf set-env ${CF_APP_NAME} COMPOSER_CARD ${BUSINESS_NETWORK_CARD}
     cf set-env ${CF_APP_NAME} COMPOSER_NAMESPACES required
