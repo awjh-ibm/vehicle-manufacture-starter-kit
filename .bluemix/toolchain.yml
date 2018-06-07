@@ -46,5 +46,5 @@ form:
       deploy-region: '{{region}}'
       deploy-organization: '{{organization}}'
       deploy-space: '{{space}}'
-      blockchain-service-instance: '{{toolchain.name}}-blockchain'
-      cloudant-service-instance: '{{toolchain.name}}-cloudant'
+      blockchain-service-instance: 'vehicle-manufacture-blockchain-service'
+      cloudant-service-instance: 'vehicle-manufacture-cloudant-service'
