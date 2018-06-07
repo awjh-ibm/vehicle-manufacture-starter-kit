@@ -182,7 +182,6 @@ function deploy_composer_rest_server {
     if [ ! -z "$REST_SERVER_URL" -a "$REST_SERVER_URL" != " " ]
     then
         CF_APP_ROUTE=$(echo "${REST_SERVER_URL}" | cut -f1 -d".")
-        echo 'USING EXISTING ROUTE'
     fi
     cf push \
         ${CF_APP_NAME} \
