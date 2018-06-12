@@ -2,9 +2,39 @@
 
 set -ex
 
-source .bluemix/config.sh
-
 export COMPOSER_VERSION=0.19.5
+
+function exit_on_error {
+    if [ "$?" = "0" ]; then
+        return 0
+    fi
+
+    message=${1:-${expected_error_message:-"Unexpected Error"}}
+
+    echo "ERROR: ${message}" 1>&2
+
+    if [ "$BLOCKCHAIN_SAMPLE_ID" != "" -a "$BLOCKCHAIN_URL" != "" ]; then
+        request=$(jq -c -n \
+            --arg app "$BLOCKCHAIN_SAMPLE_APP" \
+            --arg url "$BLOCKCHAIN_SAMPLE_URL" \
+            --arg msg "$message" \
+            '{
+                app: $app,
+                completed_step: -1,
+                url: $url,
+                debug_msg: $msg
+            }')
+
+        do_curl \
+            -X PUT \
+            -H 'Content-Type: application/json' \
+            -u ${BLOCKCHAIN_KEY}:${BLOCKCHAIN_SECRET} \
+            --data-binary "$request" \
+            ${BLOCKCHAIN_URL}/api/v1/networks/${BLOCKCHAIN_NETWORK_ID}/sample/${BLOCKCHAIN_SAMPLE_ID}
+    fi
+
+    exit 1
+}
 
 function install_nodejs {
     npm config delete prefix
@@ -39,3 +69,7 @@ function do_curl {
         return ${HTTP_STATUS}
     fi
 }
+
+install_jq
+
+trap 'exit_on_error' ERR
